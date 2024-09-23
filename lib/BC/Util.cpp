@@ -708,7 +708,7 @@ LiftedFunctionArgs(llvm::BasicBlock *block, const IntrinsicTable &intrinsics) {
 void ForEachISel(llvm::Module *module, ISelCallback callback) {
   for (auto &global : module->globals()) {
     const auto &name = global.getName();
-    if (name.startswith("ISEL_") || name.startswith("COND_")) {
+    if (name.starts_with("ISEL_") || name.starts_with("COND_")) {
       llvm::Function *sem = nullptr;
       if (global.hasInitializer()) {
         sem = llvm::dyn_cast<llvm::Function>(
@@ -1144,24 +1144,6 @@ MoveConstantIntoModule(llvm::Constant *c, llvm::Module *dest_module,
         moved_c = ret;
         return ret;
       }
-      case llvm::Instruction::And: {
-        auto ret = llvm::ConstantExpr::getAnd(
-            MoveConstantIntoModule(ce->getOperand(0), dest_module, value_map,
-                                   type_map),
-            MoveConstantIntoModule(ce->getOperand(1), dest_module, value_map,
-                                   type_map));
-        moved_c = ret;
-        return ret;
-      }
-      case llvm::Instruction::Or: {
-        auto ret = llvm::ConstantExpr::getOr(
-            MoveConstantIntoModule(ce->getOperand(0), dest_module, value_map,
-                                   type_map),
-            MoveConstantIntoModule(ce->getOperand(1), dest_module, value_map,
-                                   type_map));
-        moved_c = ret;
-        return ret;
-      }
       case llvm::Instruction::Xor: {
         auto ret = llvm::ConstantExpr::getXor(
             MoveConstantIntoModule(ce->getOperand(0), dest_module, value_map,
@@ -1171,70 +1153,11 @@ MoveConstantIntoModule(llvm::Constant *c, llvm::Module *dest_module,
         moved_c = ret;
         return ret;
       }
-      case llvm::Instruction::ICmp: {
-        auto ret = llvm::ConstantExpr::getICmp(
-            ce->getPredicate(),
-            MoveConstantIntoModule(ce->getOperand(0), dest_module, value_map,
-                                   type_map),
-            MoveConstantIntoModule(ce->getOperand(1), dest_module, value_map,
-                                   type_map));
-        moved_c = ret;
-        return ret;
-      }
-      case llvm::Instruction::ZExt: {
-        auto ret = llvm::ConstantExpr::getZExt(
-            MoveConstantIntoModule(ce->getOperand(0), dest_module, value_map,
-                                   type_map),
-            type);
-        moved_c = ret;
-        return ret;
-      }
-      case llvm::Instruction::SExt: {
-        auto ret = llvm::ConstantExpr::getSExt(
-            MoveConstantIntoModule(ce->getOperand(0), dest_module, value_map,
-                                   type_map),
-            type);
-        moved_c = ret;
-        return ret;
-      }
       case llvm::Instruction::Trunc: {
         auto ret = llvm::ConstantExpr::getTrunc(
             MoveConstantIntoModule(ce->getOperand(0), dest_module, value_map,
                                    type_map),
             type);
-        moved_c = ret;
-        return ret;
-      }
-      case llvm::Instruction::Shl: {
-        const auto b = llvm::dyn_cast<llvm::ShlOperator>(ce);
-        auto ret = llvm::ConstantExpr::getShl(
-            MoveConstantIntoModule(ce->getOperand(0), dest_module, value_map,
-                                   type_map),
-            MoveConstantIntoModule(ce->getOperand(1), dest_module, value_map,
-                                   type_map),
-            b->hasNoUnsignedWrap(), b->hasNoSignedWrap());
-        moved_c = ret;
-        return ret;
-      }
-      case llvm::Instruction::LShr: {
-        const auto b = llvm::dyn_cast<llvm::LShrOperator>(ce);
-        auto ret = llvm::ConstantExpr::getLShr(
-            MoveConstantIntoModule(ce->getOperand(0), dest_module, value_map,
-                                   type_map),
-            MoveConstantIntoModule(ce->getOperand(1), dest_module, value_map,
-                                   type_map),
-            b->isExact());
-        moved_c = ret;
-        return ret;
-      }
-      case llvm::Instruction::AShr: {
-        const auto b = llvm::dyn_cast<llvm::AShrOperator>(ce);
-        auto ret = llvm::ConstantExpr::getAShr(
-            MoveConstantIntoModule(ce->getOperand(0), dest_module, value_map,
-                                   type_map),
-            MoveConstantIntoModule(ce->getOperand(1), dest_module, value_map,
-                                   type_map),
-            b->isExact());
         moved_c = ret;
         return ret;
       }
@@ -1295,7 +1218,7 @@ MoveConstantIntoModule(llvm::Constant *c, llvm::Module *dest_module,
             source_type,
             MoveConstantIntoModule(ce->getOperand(0), dest_module, value_map,
                                    type_map),
-            indices, g->isInBounds(), g->getInRangeIndex());
+            indices, g->isInBounds(), g->getInRange());
         moved_c = ret;
         return ret;
       }
