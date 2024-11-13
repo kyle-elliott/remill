@@ -43,6 +43,8 @@ static_assert(8 == sizeof(float128_t), "Invalid `float128_t` size.");
   typedef long double native_float80_t;
   #endif
 static_assert(10 <= sizeof(native_float80_t), "Invalid `native_float80_t` size.");
+#if !defined(_WIN32)
+  static_assert(10 <= sizeof(native_float80_t), "Invalid `native_float80_t` size.");
 #else
   typedef double native_float80_t;
   static_assert(8 == sizeof(native_float80_t), "Invalid `native_float80_t` size.");
@@ -53,7 +55,8 @@ union union_ld {
   struct {
     uint8_t data[kEightyBitsInBytes];
     // when building against CUDA, default to 64-bit float80s
-#if !defined(__CUDACC__) && (defined(__x86_64__) || defined(__i386__) || defined(_M_X86))
+#if (!defined(__CUDACC__) && !defined(_WIN32)) && \
+(defined(__x86_64__) || defined(__i386__) || defined(_M_X86))
     // We are doing x86 on x86, so we have native x86 FP80s, but they
     // are not available in raw 80-bit native form.
     //
