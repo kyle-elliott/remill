@@ -43,7 +43,10 @@ static_assert(8 == sizeof(float128_t), "Invalid `float128_t` size.");
   typedef long double native_float80_t;
   #endif
 #if !defined(_WIN32)
-  static_assert(10 <= sizeof(native_float80_t), "Invalid `native_float80_t` size.");
+static_assert(10 <= sizeof(native_float80_t), "Invalid `native_float80_t` size.");
+#else
+static_assert(8 <= sizeof(double), "Invalid `native_float80_t` size.");
+#endif
 #else
   typedef double native_float80_t;
   static_assert(8 == sizeof(native_float80_t), "Invalid `native_float80_t` size.");
