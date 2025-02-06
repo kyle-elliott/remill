@@ -385,7 +385,7 @@ llvm::Value *InstructionLifter::LiftShiftRegisterOperand(
       << "Expected " << arch_reg.name << " to be an integral type "
       << "for instruction at " << std::hex << inst.pc;
 
-  const llvm::DataLayout data_layout(module);
+  const llvm::DataLayout data_layout(module->getDataLayout());
   auto reg = LoadRegValue(block, state_ptr, arch_reg.name);
   auto reg_type = reg->getType();
   auto reg_size = data_layout.getTypeSizeInBits(reg_type).getFixedValue();
