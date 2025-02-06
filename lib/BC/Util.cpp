@@ -1825,7 +1825,7 @@ llvm::Value *LoadFromMemory(const IntrinsicTable &intrinsics,
   const auto initial_addr = addr;
   auto module = intrinsics.error->getParent();
   auto &context = module->getContext();
-  llvm::DataLayout dl(module);
+  llvm::DataLayout dl(module->getDataLayout());
   llvm::Value *args_2[2] = {mem_ptr, addr};
   auto index_type = llvm::Type::getIntNTy(context, dl.getPointerSizeInBits(0));
 
@@ -1995,7 +1995,7 @@ llvm::Value *StoreToMemory(const IntrinsicTable &intrinsics,
   const auto initial_addr = addr;
   auto module = intrinsics.error->getParent();
   auto &context = module->getContext();
-  llvm::DataLayout dl(module);
+  llvm::DataLayout dl(module->getDataLayout());
   llvm::Value *args_3[3] = {mem_ptr, addr, val_to_store};
   auto index_type = llvm::Type::getInt32Ty(context);
 
