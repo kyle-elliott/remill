@@ -484,6 +484,8 @@ void X86ArchBase::PopulateRegisterTable(void) const {
     REG(state, K7, k_reg.elems[7].val, u64);
   }
 
+  REG(state, RFLAG, rflag.flat, u64);
+
   // Arithmetic flags. Data-flow analyses will clear these out ;-)
   REG(state, AF, aflag.af, u8);
   REG(state, CF, aflag.cf, u8);
